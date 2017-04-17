@@ -113,6 +113,14 @@ def AssetJsonView(request):
         response = obj.fetch_assets(request)
         return JsonResponse(response.__dict__)
 
+    if request.method == 'DELETE':
+        response = asset.Asset.delete_assets(request)
+        return JsonResponse(response.__dict__)
+
+    if request.method == 'PUT':
+        response = asset.Asset.put_assets(request)
+        return JsonResponse(response.__dict__)
+
 
 def ChartView(request,chart_type):
     if chart_type == 'business':

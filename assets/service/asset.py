@@ -14,8 +14,9 @@ class Asset(BaseServiceList):
     def __init__(self):
         # 查询条件的配置
         condition_config = [
-            {'name': 'cabinet_num', 'text': '机柜号', 'condition_type': 'input'},
-            {'name': 'device_type_id', 'text': '资产类型', 'condition_type': 'select', 'global_name': 'device_type_list'},
+            {'name': 'name', 'text': '主机', 'condition_type': 'input'},
+            {'name': 'business_unit', 'text': '业务线', 'condition_type': 'select'},
+            {'name': 'asset_type', 'text': '资产类型', 'condition_type': 'select', 'global_name': 'device_type_list'},
             {'name': 'device_status_id', 'text': '资产状态', 'condition_type': 'select',
              'global_name': 'device_status_list'},
         ]
@@ -29,7 +30,7 @@ class Asset(BaseServiceList):
                 'attr': {}  # 自定义属性
             },
             {
-                'q': 'device_type_id',
+                'q': 'asset_type',
                 'title': "资产类型",
                 'display': 1,
                 'text': {'content': "{n}", 'kwargs': {'n': '@@device_type_list'}},
@@ -43,13 +44,6 @@ class Asset(BaseServiceList):
                 'attr': {}
             },
             {
-                'q': 'network_title',
-                'title': "网络设备标识",
-                'display': 1,
-                'text': {'content': "{n}", 'kwargs': {'n': '@network_title'}},
-                'attr': {}
-            },
-            {
                 'q': 'idc_id',
                 'title': "IDC",
                 'display': 1,
@@ -57,21 +51,6 @@ class Asset(BaseServiceList):
                 'attr': {'name': 'idc_id', 'id': '@idc_id', 'origin': '@idc_id', 'edit-enable': 'true',
                          'edit-type': 'select',
                          'global-name': 'idc_list'}
-            },
-            {
-                'q': 'cabinet_num',
-                'title': "机柜号",
-                'display': 1,
-                'text': {'content': "{cabinet_num}", 'kwargs': {'cabinet_num': '@cabinet_num'}},
-                'attr': {'name': 'cabinet_num', 'edit-enable': 'true', 'edit-type': 'input', 'origin': '@cabinet_num', }
-            },
-            {
-                'q': 'cabinet_order',
-                'title': "位置",
-                'display': 1,
-                'text': {'content': "{cabinet_order}", 'kwargs': {'cabinet_order': '@cabinet_order'}},
-                'attr': {'name': 'cabinet_order', 'edit-enable': 'true', 'edit-type': 'input',
-                         'origin': '@cabinet_order', }
             },
             {
                 'q': 'business_unit_id',
@@ -112,11 +91,12 @@ class Asset(BaseServiceList):
         ]
         # 额外搜索条件
         extra_select = {
-            'server_title': 'select hostname from assets_server where assets_server.asset_id=assets_asset.id and assets_asset.device_type_id=1',
-            'network_title': 'select vlan_ip from assets_networkdevice where assets_networkdevice.asset_id=assets_asset.id and assets_asset.device_type_id=2',
+            'server_title': 'SELECT assets_asset.name FROM assets_server INNER JOIN assets_asset ON '
+                            'assets_server.asset_id = assets_asset.id WHERE assets_server.asset_id=assets_asset.id',
+            'network_title': 'SELECT assets_asset.name FROM assets_networkdevice INNER JOIN assets_asset ON'
+                             ' assets_networkdevice.asset_id = assets_asset.id',
         }
         super(Asset, self).__init__(condition_config, table_config, extra_select)
-
 
     @property
     def device_status_list(self):
@@ -125,13 +105,13 @@ class Asset(BaseServiceList):
 
     @property
     def device_type_list(self):
-        result = map(lambda x: {'id': x[0], 'name': x[1]}, models.Asset.device_type_choices)
+        result = map(lambda x: {'id': x[0], 'name': x[1]}, models.Asset.asset_type_choices)
         return list(result)
 
     @property
     def idc_list(self):
-        values = models.IDC.objects.only('id', 'name', 'floor')
-        result = map(lambda x: {'id': x.id, 'name': "%s-%s" % (x.name, x.floor)}, values)
+        values = models.IDC.objects.only('id', 'name', 'memo')
+        result = map(lambda x: {'id': x.id, 'name': "%s-%s" % (x.name, x.memo)}, values)
         return list(result)
 
     @property
@@ -146,7 +126,7 @@ class Asset(BaseServiceList):
             con_dict = {}
         else:
             con_dict = json.loads(con_str)
-
+        print(con_dict)
         con_q = Q()
         for k, v in con_dict.items():
             temp = Q()
@@ -154,6 +134,7 @@ class Asset(BaseServiceList):
             for item in v:
                 temp.children.append((k, item))
             con_q.add(temp, 'AND')
+        print(con_q)
         return con_q
 
     def fetch_assets(self, request):
@@ -164,8 +145,8 @@ class Asset(BaseServiceList):
             asset_count = models.Asset.objects.filter(conditions).count()
             page_info = PageInfo(request.GET.get('pager', None), asset_count)
             asset_list = models.Asset.objects.filter(conditions).extra(select=self.extra_select).values(
-                *self.values_list)[page_info.start:page_info.end]
-
+                    *self.values_list)[page_info.start:page_info.end]
+            # print(asset_list)
             ret['table_config'] = self.table_config
             ret['condition_config'] = self.condition_config
             ret['data_list'] = list(asset_list)

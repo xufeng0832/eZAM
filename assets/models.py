@@ -116,7 +116,12 @@ class Asset(models.Model):
         ('software', u'软件资产'),
         # ('others', u'其它类'),
     )
+    device_status_choices = (
+        (1, '在线'),
+        (2, '离线/过期'),
+    )
     asset_type = models.CharField(choices=asset_type_choices, max_length=64, default='server')
+    device_status_id = models.IntegerField(choices=device_status_choices, default=1)
     business_unit = models.ForeignKey("BusinessUnit", blank=True, null=True)
     sn = models.CharField(u'资产SN号', max_length=128, unique=True)
     manufactory = models.ForeignKey('Manufactory', verbose_name=u'制造商', null=True, blank=True)
@@ -131,6 +136,7 @@ class Asset(models.Model):
     memo = models.TextField(u'备注', null=True, blank=True)
     create_date = models.DateTimeField(blank=True, auto_now_add=True)
     update_date = models.DateTimeField(blank=True, auto_now=True)
+
 
     class Meta:
         verbose_name = '资产总表'
@@ -396,8 +402,8 @@ class Contract(models.Model):
 
 
 class IDC(models.Model):
-    name = models.CharField(u'机房名称', max_length=64, unique=True)
-    memo = models.CharField(u'备注', max_length=128, blank=True, null=True)
+    name = models.CharField(u'机房名称', max_length=64, unique=True,default='测试大楼')
+    memo = models.CharField(u'备注', max_length=128, blank=True, null=True,default='测试层')
 
     def __str__(self):
         return self.name
