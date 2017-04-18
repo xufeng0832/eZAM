@@ -207,7 +207,6 @@
     function initialize(pager) {
         $.Show('#shade,#loading');
         var conditions = JSON.stringify(aggregationSearchCondition());
-        console.log(conditions)
         var $body = $('#table_body');
         $.ajax({
             url: requestUrl,
@@ -420,6 +419,7 @@
             var text = $(this).text();
             var condition_type = $(this).attr('condition-type');
             var global_name = $(this).attr('global-name');
+
             var tag;
             if (condition_type == 'input') {
                 tag = $.CreateInput({

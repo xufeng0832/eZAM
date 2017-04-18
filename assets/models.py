@@ -122,7 +122,7 @@ class Asset(models.Model):
     )
     asset_type = models.CharField(choices=asset_type_choices, max_length=64, default='server')
     device_status_id = models.IntegerField(choices=device_status_choices, default=1)
-    business_unit = models.ForeignKey("BusinessUnit", blank=True, null=True)
+    business_unit = models.ForeignKey("BusinessUnit", blank=True, null=True, default=1)
     sn = models.CharField(u'资产SN号', max_length=128, unique=True)
     manufactory = models.ForeignKey('Manufactory', verbose_name=u'制造商', null=True, blank=True)
     management_ip = models.GenericIPAddressField(u'管理IP', blank=True, null=True)
@@ -130,7 +130,7 @@ class Asset(models.Model):
     trade_date = models.DateField(u'购买时间', null=True, blank=True)
     expire_date = models.DateField(u'过保修期', null=True, blank=True)
     price = models.FloatField(u'价格', null=True, blank=True)
-    idc = models.ForeignKey('IDC', verbose_name=u'IDC机房', null=True, blank=True)
+    idc = models.ForeignKey('IDC', verbose_name=u'IDC机房', null=True, blank=True,default=1)
     tags = models.ManyToManyField('Tag', blank=True)
     admin = models.ForeignKey('UserProfile', verbose_name='资产管理员', null=True, blank=True)
     memo = models.TextField(u'备注', null=True, blank=True)
@@ -181,6 +181,7 @@ class BusinessUnit(models.Model):
     '''业务线'''
     parent_unit = models.ForeignKey('self', null=True, blank=True)
     name = models.CharField(max_length=64, unique=True)
+    contact=models.ManyToManyField('UserProfile')
 
     def __str__(self):
         return self.name

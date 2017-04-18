@@ -130,3 +130,13 @@ def ChartView(request,chart_type):
         last_id = request.GET.get('last_id')
         response = chart.Dynamic.chart(last_id)
     return JsonResponse(response.__dict__, safe=False, json_dumps_params={'ensure_ascii': False})
+
+
+def AssetDetailView(request,asset_type,asset_nid):
+    response = asset.Asset.assets_detail(asset_type, asset_nid)
+    # print(request.data.name)
+    return render(request, 'asset_detail.html', {'response': response, 'device_type_id': asset_type})
+
+def AddAssetView(request):
+    if request.method == 'GET':
+        return render(request, 'add_asset.html')

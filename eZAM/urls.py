@@ -20,7 +20,7 @@ from assets import views
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    # url(r'^asset/',include(asset_urls)),
+    # url(r'^asset_report_asset/',include(asset_urls)),
     url(r'^asset/',views.AssetListView),
     url(r'^assets$', views.AssetJsonView),
     url(r'^api/',include(api)),
@@ -28,5 +28,10 @@ urlpatterns = [
     url(r'^api_test/',views.api_test),
     url('^index$',views.index),
     url('^cmdb$',views.CmdbView),
-    url(r'^chart-(?P<chart_type>\w+)$',views.ChartView)
+
+    url(r'^add-asset$', views.AddAssetView),
+    url(r'^asset-(?P<asset_type>\w+)-(?P<asset_nid>\d+)$', views.AssetDetailView),
+
+
+    url(r'^chart-(?P<chart_type>\w+)$',views.ChartView),
     ]

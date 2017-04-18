@@ -64,12 +64,14 @@ class Asset(object):
         try:
             token = models.UserProfile.objects.get(email=user).token
             now_time = int(time.time())
+            print(now_time,timestamp)
             if now_time - int(timestamp) > 300:
                 return False
             md5_format_str = "%s\n%s\n%s" % (user, timestamp, token)
             obj = hashlib.md5()
             obj.update(md5_format_str.encode("utf8"))
             landing = redis_operation.read_from_cache(timestamp,user)
+            # print(obj.hexdigest()[11:17],token_id)
             if obj.hexdigest()[11:17] == token_id and not landing:
                 redis_operation.write_to_cache(timestamp,user)
                 return True
@@ -83,6 +85,7 @@ class Asset(object):
         timestamp = self.request.GET.get('timestamp')
         token = self.request.GET.get('token')
         rest = self.clinet_check(user=user, token_id=token, timestamp=timestamp)
+        print(rest)
         if not rest:
             self.response_msg('error', 'AssetDataInvalid', "客户端是不合法的")
             response = self.response

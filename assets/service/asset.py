@@ -15,7 +15,7 @@ class Asset(BaseServiceList):
         # 查询条件的配置
         condition_config = [
             {'name': 'name', 'text': '主机', 'condition_type': 'input'},
-            {'name': 'business_unit', 'text': '业务线', 'condition_type': 'select'},
+            {'name': 'business_unit', 'text': '业务线', 'condition_type': 'select', 'global_name': 'business_unit_list'},
             {'name': 'asset_type', 'text': '资产类型', 'condition_type': 'select', 'global_name': 'device_type_list'},
             {'name': 'device_status_id', 'text': '资产状态', 'condition_type': 'select',
              'global_name': 'device_status_list'},
@@ -84,8 +84,8 @@ class Asset(BaseServiceList):
                 'title': "选项",
                 'display': 1,
                 'text': {
-                    'content': "<a href='/asset-{device_type_id}-{nid}.html'>查看详细</a> | <a href='/edit-asset-{device_type_id}-{nid}.html'>编辑</a>",
-                    'kwargs': {'device_type_id': '@device_type_id', 'nid': '@id'}},
+                    'content': "<a href='/asset-{asset_type}-{nid}'>查看详细</a> | <a href='/edit-asset-{asset_type}-{nid}'>编辑</a>",
+                    'kwargs': {'asset_type': '@asset_type', 'nid': '@id'}},
                 'attr': {}
             },
         ]
@@ -126,7 +126,6 @@ class Asset(BaseServiceList):
             con_dict = {}
         else:
             con_dict = json.loads(con_str)
-        print(con_dict)
         con_q = Q()
         for k, v in con_dict.items():
             temp = Q()
@@ -134,7 +133,6 @@ class Asset(BaseServiceList):
             for item in v:
                 temp.children.append((k, item))
             con_q.add(temp, 'AND')
-        print(con_q)
         return con_q
 
     def fetch_assets(self, request):
@@ -146,7 +144,6 @@ class Asset(BaseServiceList):
             page_info = PageInfo(request.GET.get('pager', None), asset_count)
             asset_list = models.Asset.objects.filter(conditions).extra(select=self.extra_select).values(
                     *self.values_list)[page_info.start:page_info.end]
-            # print(asset_list)
             ret['table_config'] = self.table_config
             ret['condition_config'] = self.condition_config
             ret['data_list'] = list(asset_list)
@@ -208,14 +205,16 @@ class Asset(BaseServiceList):
         return response
 
     @staticmethod
-    def assets_detail(device_type_id, asset_id):
-
+    def assets_detail(asset_type, asset_id):
+        # print(asset_type,asset_id)
         response = BaseResponse()
         try:
-            if device_type_id == '1':
+            if asset_type == 'server':
                 response.data = models.Server.objects.filter(asset_id=asset_id).select_related('asset').first()
-            else:
+            elif asset_type == 'networkdevice':
                 response.data = models.NetworkDevice.objects.filter(asset_id=asset_id).select_related('asset').first()
+            elif asset_type == 'securitydevice':
+                response.data = models.SecurityDevice.objects.filter(asset_id=asset_id).select_related('asset').first()
 
         except Exception as e:
             response.status = False
