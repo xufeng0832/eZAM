@@ -84,7 +84,8 @@ class Asset(BaseServiceList):
                 'title': "选项",
                 'display': 1,
                 'text': {
-                    'content': "<a href='/asset-{asset_type}-{nid}'>查看详细</a> | <a href='/edit-asset-{asset_type}-{nid}'>编辑</a>",
+                    # 'content': "<a href='/asset-{asset_type}-{nid}'>查看详细</a> | <a href='/edit-asset-{asset_type}-{nid}'>编辑</a>",
+                    'content': "<a href='/asset-{asset_type}-{nid}'>查看详细</a> | <a href='#'>编辑</a>",
                     'kwargs': {'asset_type': '@asset_type', 'nid': '@id'}},
                 'attr': {}
             },
