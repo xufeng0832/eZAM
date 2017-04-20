@@ -32,6 +32,8 @@ urlpatterns = [
     url(r'^add-asset$', views.AddAssetView),
     url(r'^asset-(?P<asset_type>\w+)-(?P<asset_nid>\d+)$', views.AssetDetailView),
 
+    url(r'^users$',views.UserListView),
+    url(r'^user$',views.UserJsonView),
 
     url(r'^chart-(?P<chart_type>\w+)$',views.ChartView),
     ]

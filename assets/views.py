@@ -5,7 +5,7 @@ from assets import core
 from django.views.decorators.csrf import csrf_exempt
 from assets import models
 from assets import rest_searializer
-from web.service import chart
+from web.service import chart, user
 from django.http import JsonResponse
 from assets.service import asset
 
@@ -23,6 +23,7 @@ def asset_with_no_asset_id(request):  # 新资产进入待批准库
         # return render(request,'assets/acquire_asset_id_test.html',{'response':res})
         # print('---------:20')
         return HttpResponse(json.dumps(res))
+
 
 # 新资产批准入口
 def new_assets_approval(request):
@@ -102,6 +103,7 @@ def CmdbView(request):
     if request.method == 'GET':
         return render(request, 'cmdb.html')
 
+
 def AssetListView(request):
     if request.method == 'GET':
         return render(request, 'asset_list.html')
@@ -122,7 +124,7 @@ def AssetJsonView(request):
         return JsonResponse(response.__dict__)
 
 
-def ChartView(request,chart_type):
+def ChartView(request, chart_type):
     if chart_type == 'business':
         response = chart.Business.chart()
         # print(request.META)
@@ -132,10 +134,31 @@ def ChartView(request,chart_type):
     return JsonResponse(response.__dict__, safe=False, json_dumps_params={'ensure_ascii': False})
 
 
-def AssetDetailView(request,asset_type,asset_nid):
+def UserListView(request):
+    if request.method == 'GET':
+        return render(request, 'users_list.html')
+
+
+def UserJsonView(request):
+    if request.method == 'GET':
+        obj = user.User()
+        response = obj.fetch_users(request)
+        return JsonResponse(response.__dict__)
+
+    if request.method == 'DELETE':
+        response = user.User.delete_users(request)
+        return JsonResponse(response.__dict__)
+
+    if request.method == 'PUT':
+        response = user.User.put_users(request)
+        return JsonResponse(response.__dict__)
+
+
+def AssetDetailView(request, asset_type, asset_nid):
     response = asset.Asset.assets_detail(asset_type, asset_nid)
     # print(request.data.name)
     return render(request, 'asset_detail.html', {'response': response, 'device_type_id': asset_type})
+
 
 def AddAssetView(request):
     if request.method == 'GET':

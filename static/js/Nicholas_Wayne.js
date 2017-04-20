@@ -270,10 +270,7 @@
     function initTableBody(startNum, list, tbConfig) {
         var $body = $('#table_body');
         $body.empty();
-
-        //console.log(list)
         $.each(list, function (k1, row) {
-            //console.log(row)
             // row 表示从数据库获取的每行资产字典信息 {'id':'1','name': 'root' ...}
             // tbConfig 包含了所有表格的配置
             var tr = document.createElement('tr');
@@ -290,14 +287,10 @@
             var tagNum = document.createElement('td');
             tagNum.innerHTML = startNum + k1 + 1;
             $(tr).append(tagNum);
-
-
             $.each(tbConfig, function (k2, config) {
                 // config中是对每一列数据的展示方式
                 if (config.display) {
-
                     var td = document.createElement('td');
-
                     // 创建td的内容
                     var kwargs = {};
                     $.each(config.text.kwargs, function (k, v) {
