@@ -3,7 +3,7 @@
 # import random
 # 
 # 增加一行测试11
-# 我又增加一行测试
+# 我
 # def bin_search(data_set, val):
 #     low = 0
 #     high = len(data_set) - 1
