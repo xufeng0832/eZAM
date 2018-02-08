@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 # Created by xuchao on 2017/3/8.
-# ceshi
 
 class BaseResponse(object):
     def __init__(self):
