@@ -1,8 +1,8 @@
 # #!/usr/bin/env python3
 # # Created by xuchao on 2017/3/2.
 # import random
-#
-#
+# 
+# 增加一行测试
 # def bin_search(data_set, val):
 #     low = 0
 #     high = len(data_set) - 1
