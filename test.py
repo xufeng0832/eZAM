@@ -1,9 +1,9 @@
 # #!/usr/bin/env python3
 # # Created by xuchao on 2017/3/2.
 # import random
-#  1
-# d
-# w
+#  
+# 
+# 
 # def bin_search(data_set, val):
 #     low = 0
 #     high = len(data_set) - 1
